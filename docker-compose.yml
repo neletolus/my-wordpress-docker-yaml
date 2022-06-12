@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  wp:
+    depends_on:
+      - db
+    image: wordpress:latest
+    ports:
+      - 80:80
+    volumes:
+      - ./wordpress/wp-content:/var/www/html/wp-content
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wp_user
+      WORDPRESS_DB_PASSWORD: p455w0rd
+
+  db:
+    image: mariadb
+    volumes:
+      - ./db_data:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wp_user
+      MYSQL_PASSWORD: p455w0rd
+      MYSQL_ROOT_PASSWORD: r00+p455w0rd
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=db
+      - PMA_USER=root
+      - PMA_PASSWORD=r00+p455w0rd
+    ports:
+      - 3000:80
+    volumes:
+      - ./phpmyadmin/sessions:/sessions
+
+volumes:
+  db_data:
